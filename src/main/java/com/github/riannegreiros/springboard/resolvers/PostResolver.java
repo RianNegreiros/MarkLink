@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class PostResolver {
@@ -35,5 +36,14 @@ public class PostResolver {
         }
 
         return userService.findByPostId(postId);
+    }
+
+    @SchemaMapping(typeName = "User")
+    public List<PostDto> posts(UUID userId) {
+        if (userId == null) {
+            throw new RuntimeException("User id can not be null");
+        }
+
+        return postService.getPostsByAuthor(userId);
     }
 }
