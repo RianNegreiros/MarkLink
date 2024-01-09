@@ -1,5 +1,6 @@
 type Query {
     getPosts: [Post!]!
+    recentPosts(page: Int!, size: Int!): [Post!]!
 }
 
 type Post {

@@ -6,6 +6,7 @@ import com.github.riannegreiros.springboard.entities.PostEntity;
 import com.github.riannegreiros.springboard.services.PostService;
 import com.github.riannegreiros.springboard.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,11 @@ public class PostResolver {
     @QueryMapping
     public List<PostDto> getPosts() {
         return postService.getPosts();
+    }
+
+    @QueryMapping
+    public List<PostDto> recentPosts(@Argument Integer page, @Argument Integer size) {
+        return postService.getPosts(page, size);
     }
 
     @SchemaMapping(typeName = "Post")
