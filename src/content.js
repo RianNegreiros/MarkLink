@@ -48,12 +48,42 @@ function formatMarkdownLink(metadata) {
   return `[${formattedTitle}](${metadata.url})`;
 }
 
+// Show a notification to the user
+function showNotification(message) {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.textContent = message;
+  notification.style.position = 'fixed';
+  notification.style.top = '20px';
+  notification.style.right = '20px';
+  notification.style.backgroundColor = '#4CAF50';
+  notification.style.color = 'white';
+  notification.style.padding = '12px 20px';
+  notification.style.borderRadius = '4px';
+  notification.style.zIndex = '9999';
+  notification.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+  notification.style.transition = 'opacity 0.3s';
+
+  // Add to DOM
+  document.body.appendChild(notification);
+
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 300);
+  }, 3000);
+}
+
 // Listen for messages from the popup or background script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getMetadata") {
     const metadata = extractMetadata();
     const markdownLink = formatMarkdownLink(metadata);
     sendResponse({ metadata: metadata, markdownLink: markdownLink });
+  } else if (request.action === "showNotification") {
+    showNotification(request.message);
   }
   return true; // Keep the message channel open for async response
 }); 

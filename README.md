@@ -59,7 +59,3 @@ A Chrome extension that generates formatted Markdown links for Obsidian notes wi
 ## Contributing
 
 Feel free to submit issues or pull requests to improve the extension.
-
-## License
-
-MIT License
