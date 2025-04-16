@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obsidian Clipper</title>
+  <style>
+    :root {
+      --primary: #50629F;
+      --primary-light: #7B88C7;
+      --primary-dark: #3A4A8C;
+      --success-bg: #e8f5e9;
+      --success-text: #2e7d32;
+      --error-bg: #ffebee;
+      --error-text: #c62828;
+      --gray-bg: #f5f5f5;
+      --text: #333;
+      --radius: 6px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      width: 320px;
+      padding: 16px;
+      color: var(--text);
+      background-color: white;
+      line-height: 1.5;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .logo {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo img {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+    }
+
+    .button {
+      background-color: var(--primary-light);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+      width: 100%;
+      text-align: center;
+    }
+
+    .button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .button:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .status {
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      display: none;
+    }
+
+    .status.success {
+      background-color: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    .status.error {
+      background-color: var(--error-bg);
+      color: var(--error-text);
+    }
+
+    .status-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .preview {
+      padding: 12px;
+      background-color: var(--gray-bg);
+      border-radius: var(--radius);
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 13px;
+      word-break: break-all;
+      white-space: pre-wrap;
+      display: none;
+      border: 1px solid #ddd;
+    }
+
+    .footer {
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <img src="icons/icon128.png" alt="Obsidian Clipper Icon">
+      </div>
+      <h1>Obsidian Clipper</h1>
+    </div>
+
+    <button id="copyButton" class="button">Copy as Markdown Link</button>
+
+    <div id="status" class="status">
+      <svg class="status-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span id="statusText">Copied to clipboard!</span>
+    </div>
+
+    <div id="preview" class="preview"></div>
+
+    <div class="footer">
+      Clip web content to your Obsidian vault
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>
