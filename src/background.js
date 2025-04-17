@@ -48,22 +48,21 @@ function fetchTitleAndCreateLink(url) {
   copyToClipboard(markdownLink);
 }
 
-// Helper function to copy text to clipboard
+// Helper function to copy text to clipboard using Navigator API
 function copyToClipboard(text) {
-  // Create a temporary textarea element to use for copying
-  const textarea = document.createElement('textarea');
-  textarea.value = text;
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand('copy');
-  document.body.removeChild(textarea);
-
-  // Show notification
+  // Use navigator.clipboard API through a content script since background scripts
+  // don't have access to the clipboard API directly
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs[0]) {
       chrome.tabs.sendMessage(tabs[0].id, {
-        action: "showNotification",
-        message: "Markdown link copied to clipboard!"
+        action: "copyToClipboard",
+        text: text
+      }, () => {
+        // Empty callback function to handle the response, even if we don't need it
+        // This prevents the "message channel closed" warning
+        if (chrome.runtime.lastError) {
+          console.error('Error sending message:', chrome.runtime.lastError);
+        }
       });
     }
   });
