@@ -2,6 +2,15 @@ document.addEventListener('DOMContentLoaded', function () {
   const copyButton = document.getElementById('copyButton');
   const statusDiv = document.getElementById('status');
   const previewDiv = document.getElementById('preview');
+  const optionsLink = document.getElementById('optionsLink');
+
+  // Setup options link to open options page
+  if (optionsLink) {
+    optionsLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      chrome.runtime.openOptionsPage();
+    });
+  }
 
   // Get current active tab
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -66,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
-    // Auto-trigger the copy when popup opens 
-    copyButton.click();
+    // Auto-trigger the copy when popup opens (optional - uncomment if desired)
+    // copyButton.click();
   });
 }); 

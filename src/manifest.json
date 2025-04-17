@@ -17,6 +17,7 @@
     "default_title": "Copy as Obsidian link",
     "default_popup": "popup.html"
   },
+  "options_page": "options.html",
   "permissions": [
     "activeTab",
     "clipboardWrite",
@@ -34,5 +35,13 @@
         "content.js"
       ]
     }
-  ]
+  ],
+  "commands": {
+    "copy-as-markdown": {
+      "suggested_key": {
+        "default": "Alt+M"
+      },
+      "description": "Copy current page as Markdown link"
+    }
+  }
 }

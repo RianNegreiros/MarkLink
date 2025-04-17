@@ -12,6 +12,17 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+// Handle keyboard shortcuts
+chrome.commands.onCommand.addListener((command) => {
+  if (command === "copy-as-markdown") {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        generateMarkdownLinkFromTab(tabs[0]);
+      }
+    });
+  }
+});
+
 // Handle context menu clicks
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "copyAsMarkdownLink") {

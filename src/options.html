@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarkLink Options</title>
+  <style>
+    :root {
+      --primary: #4a6bdf;
+      --primary-light: #eef1fd;
+      --secondary: #6c757d;
+      --dark: #2d3748;
+      --light: #f8f9fa;
+      --warning: #ffc107;
+      --warning-light: #fff8e1;
+      --border: #e2e8f0;
+      --shadow: rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      line-height: 1.6;
+      color: var(--dark);
+      background-color: #f5f7fa;
+      padding: 0;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    header {
+      background-color: white;
+      padding: 30px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+      box-shadow: 0 4px 6px var(--shadow);
+    }
+
+    header .container {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      background-color: var(--primary);
+      border-radius: 8px;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    h1 {
+      color: var(--dark);
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    main {
+      padding-bottom: 60px;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      color: var(--primary);
+      font-size: 22px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--primary-light);
+    }
+
+    p {
+      margin-bottom: 15px;
+      color: var(--dark);
+    }
+
+    code {
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+      background-color: var(--light);
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+
+    .steps {
+      margin: 20px 0;
+      counter-reset: step-counter;
+      list-style-type: none;
+    }
+
+    .steps li {
+      margin-bottom: 15px;
+      padding-left: 40px;
+      position: relative;
+    }
+
+    .steps li::before {
+      content: counter(step-counter);
+      counter-increment: step-counter;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .note {
+      background-color: var(--warning-light);
+      border-left: 4px solid var(--warning);
+      padding: 15px 20px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .note strong {
+      color: #e6a100;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    ul {
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+
+    ul li {
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin: 15px 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--secondary);
+      font-size: 14px;
+      border-top: 1px solid var(--border);
+      background-color: white;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 20px 0;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .steps li {
+        padding-left: 35px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="logo">M</div>
+      <h1>MarkLink Options</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <h2>Keyboard Shortcut</h2>
+      <p>MarkLink comes with a default keyboard shortcut: <code>Alt+M</code></p>
+      <p>You can customize this shortcut by following these steps:</p>
+
+      <ol class="steps">
+        <li>Go to <code>chrome://extensions</code> in your browser</li>
+        <li>Scroll down and click on "Keyboard Shortcuts" at the bottom of the page</li>
+        <li>Find "MarkLink" in the list</li>
+        <li>Click in the box next to "Copy current page as Markdown link"</li>
+        <li>Press your desired key combination</li>
+        <li>Click "OK" to save</li>
+      </ol>
+
+      <div class="note">
+        <strong>Note:</strong> Some key combinations might already be in use by Chrome or other extensions and won't be
+        available.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Other Ways to Use MarkLink</h2>
+      <p>In addition to the keyboard shortcut, you can also:</p>
+      <ul>
+        <li>Click the MarkLink icon in your browser toolbar</li>
+        <li>Right-click on any page and select "Copy as Markdown Link"</li>
+      </ul>
+    </div>
+  </main>
+
+</body>
+
+</html>
