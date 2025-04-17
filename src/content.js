@@ -76,6 +76,18 @@ function showNotification(message) {
   }, 3000);
 }
 
+// Copy text to clipboard
+function copyTextToClipboard(text) {
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      showNotification("Markdown link copied to clipboard!");
+    })
+    .catch(err => {
+      console.error('Could not copy text: ', err);
+      showNotification("Failed to copy to clipboard: " + err);
+    });
+}
+
 // Listen for messages from the popup or background script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getMetadata") {
@@ -84,6 +96,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ metadata: metadata, markdownLink: markdownLink });
   } else if (request.action === "showNotification") {
     showNotification(request.message);
+    sendResponse({ success: true }); // Send a response even if we don't use it
+  } else if (request.action === "copyToClipboard") {
+    copyTextToClipboard(request.text);
+    sendResponse({ success: true }); // Send a response even if we don't use it
   }
-  return true; // Keep the message channel open for async response
+  return false; // We're not using asynchronous response for any action now
 }); 

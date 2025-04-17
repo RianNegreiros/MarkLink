@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
-    // Auto-trigger the copy when popup opens (optional - uncomment if desired)
-    // copyButton.click();
+    // Auto-trigger the copy when popup opens 
+    copyButton.click();
   });
 }); 
