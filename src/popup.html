@@ -164,6 +164,39 @@
     .options-link:hover {
       text-decoration: underline;
     }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #181a1b;
+        color: #f1f1f1;
+      }
+
+      .card,
+      .preview {
+        background-color: #23272a;
+        color: #f1f1f1;
+        border-color: #333;
+      }
+
+      .button {
+        background-color: #50629F;
+        color: #fff;
+      }
+
+      .button:hover {
+        background-color: #3A4A8C;
+      }
+
+      .status.success {
+        background-color: #224d2b;
+        color: #b6f7c1;
+      }
+
+      .status.error {
+        background-color: #4d2222;
+        color: #f7b6b6;
+      }
+    }
   </style>
 </head>
 
@@ -195,7 +228,7 @@
     <div id="preview" class="preview"></div>
 
     <div class="footer">
-      Create a Markdown link to your Obsidian vault
+      Create a Markdown link to your notes
     </div>
   </div>
 
