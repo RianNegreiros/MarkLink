@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3 - 2025-04-24
+
+- Refactored codebase for clarity and maintainability
+- Modularized content script extraction logic
+- Improved popup and notification dark mode support
+- Cleaned up and simplified popup UI and code
+
 ## 1.2 - 2025-04-24
 
 - Added dark mode support (follows system preference)

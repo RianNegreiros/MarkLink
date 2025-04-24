@@ -27,30 +27,6 @@ A Chrome extension that generates formatted Markdown links for Obsidian notes wi
 4. The formatted Markdown link is copied to your clipboard
 5. Paste the link into your Obsidian document
 
-## Supported Platforms for Enhanced Metadata Extraction
-
-- YouTube videos (extracts channel name)
-
-## TODO: Future Platform Support
-
-- **Academic Resources**
-  - [ ] Google Scholar (extract paper authors and publication)
-  - [ ] ResearchGate (extract researchers and paper titles)
-
-- **Learning Platforms**
-  - [ ] Coursera (extract course name and instructor)
-  - [ ] Udemy (extract course title and instructor)
-
-- **Technical Documentation**
-  - [ ] Stack Overflow (extract question title and top answerer)
-  - [ ] GitHub (extract repo name and owner)
-  - [ ] MDN Web Docs (extract article title and section)
-  - [ ] Documentation sites (extract article title and product)
-
-- **News and Blogs**
-  - [ ] Medium (extract author and publication)
-  - [ ] DEV.to (extract author and tags)
-
 ## Troubleshooting
 
 - **Link not generated**: Refresh the page and try again. Some dynamic websites may need to fully load before the extension can extract metadata.
