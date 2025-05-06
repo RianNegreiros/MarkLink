@@ -1,11 +1,12 @@
 // Background script to handle tab information and context menu
+const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
 
 // Create context menu when extension is installed
-chrome.runtime.onInstalled.addListener(() => {
+browserAPI.runtime.onInstalled.addListener(() => {
   console.log('MarkLink extension installed');
 
   // Create context menu
-  chrome.contextMenus.create({
+  browserAPI.contextMenus.create({
     id: "copyAsMarkdownLink",
     title: "Copy as Markdown Link",
     contexts: ["page", "link"]
@@ -13,9 +14,9 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // Handle keyboard shortcuts
-chrome.commands.onCommand.addListener((command) => {
+browserAPI.commands.onCommand.addListener((command) => {
   if (command === "copy-as-markdown") {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    browserAPI.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]) {
         generateMarkdownLinkFromTab(tabs[0]);
       }
@@ -24,7 +25,7 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 // Handle context menu clicks
-chrome.contextMenus.onClicked.addListener((info, tab) => {
+browserAPI.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "copyAsMarkdownLink") {
     if (info.linkUrl) {
       // If user right-clicked on a link
@@ -38,9 +39,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 // Generate markdown link from active tab
 function generateMarkdownLinkFromTab(tab) {
-  chrome.tabs.sendMessage(tab.id, { action: "getMetadata" }, (response) => {
-    if (chrome.runtime.lastError) {
-      console.error('Error:', chrome.runtime.lastError);
+  browserAPI.tabs.sendMessage(tab.id, { action: "getMetadata" }, (response) => {
+    if (browserAPI.runtime.lastError) {
+      console.error('Error:', browserAPI.runtime.lastError);
       return;
     }
 
@@ -63,16 +64,16 @@ function fetchTitleAndCreateLink(url) {
 function copyToClipboard(text) {
   // Use navigator.clipboard API through a content script since background scripts
   // don't have access to the clipboard API directly
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  browserAPI.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs[0]) {
-      chrome.tabs.sendMessage(tabs[0].id, {
+      browserAPI.tabs.sendMessage(tabs[0].id, {
         action: "copyToClipboard",
         text: text
       }, () => {
         // Empty callback function to handle the response, even if we don't need it
         // This prevents the "message channel closed" warning
-        if (chrome.runtime.lastError) {
-          console.error('Error sending message:', chrome.runtime.lastError);
+        if (browserAPI.runtime.lastError) {
+          console.error('Error sending message:', browserAPI.runtime.lastError);
         }
       });
     }

@@ -1,4 +1,6 @@
 // Modular extraction for different sites
+const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
+
 function extractYouTubeMetadata() {
   let creator = '';
   const channelElement = document.querySelector('a.yt-simple-endpoint.style-scope.ytd-channel-name') ||
@@ -112,7 +114,7 @@ function copyTextToClipboard(text) {
 }
 
 // Listen for messages from the popup or background script
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'getMetadata') {
     const metadata = extractMetadata();
     const markdownLink = formatMarkdownLink(metadata);
@@ -124,5 +126,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     copyTextToClipboard(request.text);
     sendResponse({ success: true });
   }
-  return false;
+  return true; // Keep the message channel open for asynchronous responses
 }); 
