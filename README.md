@@ -1,6 +1,6 @@
 # MarkLink
 
-A Chrome extension that generates formatted Markdown links for Obsidian notes with just one click.
+A browser extension that generates formatted Markdown links for Obsidian notes with just one click.
 
 ## Features
 
@@ -42,7 +42,7 @@ If no author is found, the link will simply be: `[Title](URL)`
 
 ## Installation
 
-### Developer Mode Installation (Chrome)
+### Chrome Installation
 
 1. Download or clone this repository
 2. Open Chrome and navigate to `chrome://extensions/`
@@ -50,10 +50,21 @@ If no author is found, the link will simply be: `[Title](URL)`
 4. Click "Load unpacked"
 5. Select the `src` directory from your downloaded/cloned repository
 
+### Firefox Installation
+
+#### Temporary Installation
+
+1. Open Firefox and type `about:debugging` in the URL bar
+2. Click on "This Firefox" in the left sidebar
+3. Click "Load Temporary Add-on..."
+4. Navigate to the extension's directory and select the `manifest.json` file
+
+Note: Temporary installations will be removed when Firefox is restarted. Unlike Chrome, Firefox requires all extensions to be signed by Mozilla for permanent installation in regular Firefox releases.
+
 ## How to Use
 
 1. Navigate to a webpage or video you want to save to Obsidian
-2. Click the Obsidian Clipper icon in your browser toolbar
+2. Click the MarkLink icon in your browser toolbar
 3. In the popup that appears, click the "Copy as Markdown Link" button
 4. The formatted Markdown link is copied to your clipboard
 5. Paste the link into your Obsidian document

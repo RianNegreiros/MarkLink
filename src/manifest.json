@@ -1,8 +1,14 @@
 {
   "manifest_version": 3,
   "name": "MarkLink",
-  "version": "1.3",
+  "version": "1.3.1",
   "description": "Quickly generate links for your Markdown notes from web content.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "marklink@example.com",
+      "strict_min_version": "109.0"
+    }
+  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -17,14 +23,19 @@
     "default_title": "Copy as Markdown link",
     "default_popup": "popup.html"
   },
-  "options_page": "options.html",
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "permissions": [
     "activeTab",
     "clipboardWrite",
     "contextMenus"
   ],
   "background": {
-    "service_worker": "background.js"
+    "scripts": [
+      "background.js"
+    ]
   },
   "content_scripts": [
     {

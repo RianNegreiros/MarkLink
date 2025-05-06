@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
   const copyButton = document.getElementById('copyButton');
   const statusDiv = document.getElementById('status');
   const previewDiv = document.getElementById('preview');
@@ -6,12 +7,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   optionsLink?.addEventListener('click', e => {
     e.preventDefault();
-    chrome.runtime.openOptionsPage();
+    browserAPI.runtime.openOptionsPage();
   });
 
-  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+  browserAPI.tabs.query({ active: true, currentWindow: true }, tabs => {
     const activeTab = tabs[0];
-    if (!activeTab || activeTab.url.startsWith('chrome://') || activeTab.url.startsWith('edge://')) {
+    if (!activeTab ||
+      activeTab.url.startsWith('chrome://') ||
+      activeTab.url.startsWith('edge://') ||
+      activeTab.url.startsWith('about:') ||
+      activeTab.url.startsWith('moz-extension://')) {
       statusDiv.textContent = 'Cannot access this page due to browser restrictions';
       statusDiv.style.display = 'block';
       statusDiv.style.backgroundColor = '#ffebee';
@@ -20,8 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     copyButton.addEventListener('click', () => {
-      chrome.tabs.sendMessage(activeTab.id, { action: 'getMetadata' }, response => {
-        if (chrome.runtime.lastError) {
+      browserAPI.tabs.sendMessage(activeTab.id, { action: 'getMetadata' }, response => {
+        if (browserAPI.runtime.lastError) {
           statusDiv.textContent = 'Error: Could not communicate with page. Try refreshing.';
           statusDiv.style.display = 'block';
           statusDiv.style.backgroundColor = '#ffebee';

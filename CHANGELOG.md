@@ -1,25 +1,47 @@
 # Changelog
 
-## 1.3 - 2025-04-24
+All notable changes to this project will be documented in this file.
+
+## [1.2.1] - 2025-05-12
+
+### Changed
+
+- Updated Firefox installation instructions with clearer guidance on installation options
+- Simplified explanation of Firefox extension signing requirements
+
+### Fixed
+
+- Consolidated temporary and permanent installation options in documentation
+
+## [1.2.0] - 2025-04-24
+
+### Changed
 
 - Refactored codebase for clarity and maintainability
 - Modularized content script extraction logic
 - Improved popup and notification dark mode support
 - Cleaned up and simplified popup UI and code
 
-## 1.2 - 2025-04-24
+### Added
 
-- Added dark mode support (follows system preference)
+- Dark mode support (follows system preference)
 
-## 1.1 - 2025-04-17
+## [1.1.0] - 2025-04-17
 
-- Added keyboard shortcut (Alt+M) to quickly copy Markdown links
-- Added right-click context menu option to copy Markdown links
-- Improved: Copy to clipboard now handled in content script for better compatibility
-- Feature: Special handling for YouTube videos to include channel name in Markdown link
+### Added
 
-## 1.0.0 - 2024-04-16
+- Keyboard shortcut (Alt+M) to quickly copy Markdown links
+- Right-click context menu option to copy Markdown links
+- Special handling for YouTube videos to include channel name in Markdown link
+
+### Improved
+
+- Copy to clipboard now handled in content script for better compatibility
+
+## [1.0.0] - 2024-04-16
+
+### Added
 
 - Initial release: Generate Markdown links for any website
 - Basic extraction of page title and author meta tags
-- Documentation and product design added
+- Documentation and product design
