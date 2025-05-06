@@ -7,7 +7,38 @@ A Chrome extension that generates formatted Markdown links for Obsidian notes wi
 - One-click operation: Generate and copy Markdown links instantly
 - Format preservation: Links follow the standard `[Page Title - Creator name](https://example.com)` format
 - Automatic metadata extraction: Pulls page title and attempts to identify creator/author
-- Special handling for YouTube videos
+
+## Metadata Extraction
+
+MarkLink extracts metadata from web pages in the following ways:
+
+### Generic Websites
+
+For most websites, MarkLink extracts:
+
+- Page title from the document title
+- Author information from common meta tags:
+  - `<meta name="author">`
+  - `<meta property="article:author">`
+  - `<meta name="twitter:creator">`
+
+### YouTube
+
+For YouTube videos, MarkLink extracts:
+
+- Video title (removing "- YouTube" suffix)
+- Channel name from the video page DOM
+
+### Medium
+
+For Medium articles, MarkLink extracts:
+
+- Article title from the main heading
+- Author name from meta tags or byline elements
+
+The resulting Markdown link follows the format: `[Title - Author](URL)`
+
+If no author is found, the link will simply be: `[Title](URL)`
 
 ## Installation
 
