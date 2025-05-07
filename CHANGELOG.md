@@ -2,7 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.1] - 2025-05-12
+## [1.3.2] - 2025-05-07
+
+### Added
+
+- New option to format YouTube links with video thumbnails
+- Added settings page with YouTube link format preference
+- Added storage permission for saving user preferences
+
+### Changed
+
+- Updated YouTube link formatting to support thumbnail previews
+- Improved options page UI with new format selection controls
+
+## [1.2.1] - 2025-05-06
 
 ### Changed
 

@@ -30,7 +30,8 @@
   "permissions": [
     "activeTab",
     "clipboardWrite",
-    "contextMenus"
+    "contextMenus",
+    "storage"
   ],
   "background": {
     "scripts": [
