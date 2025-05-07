@@ -29,6 +29,11 @@ For YouTube videos, MarkLink extracts:
 - Video title (removing "- YouTube" suffix)
 - Channel name from the video page DOM
 
+You can choose between two formats for YouTube links:
+
+- Regular link: `[Title - Channel](URL)`
+- Thumbnail preview: `![Title - Channel](URL)` (shows video thumbnail in your markdown)
+
 ### Medium
 
 For Medium articles, MarkLink extracts:

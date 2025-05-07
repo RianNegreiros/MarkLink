@@ -68,6 +68,18 @@ function formatMarkdownLink(metadata) {
   if (metadata.creator && metadata.creator.trim() !== '' && !formattedTitle.includes(metadata.creator)) {
     formattedTitle = `${formattedTitle} - ${metadata.creator}`;
   }
+
+  // Check if this is a YouTube video
+  if (window.location.href.includes('youtube.com/watch')) {
+    return browserAPI.storage.sync.get(['youtubeFormat'], (result) => {
+      const format = result.youtubeFormat || 'link';
+      if (format === 'thumbnail') {
+        return `![${formattedTitle}](${metadata.url})`;
+      }
+      return `[${formattedTitle}](${metadata.url})`;
+    });
+  }
+
   return `[${formattedTitle}](${metadata.url})`;
 }
 
@@ -117,8 +129,19 @@ function copyTextToClipboard(text) {
 browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'getMetadata') {
     const metadata = extractMetadata();
-    const markdownLink = formatMarkdownLink(metadata);
-    sendResponse({ metadata: metadata, markdownLink: markdownLink });
+    if (window.location.href.includes('youtube.com/watch')) {
+      browserAPI.storage.sync.get(['youtubeFormat'], (result) => {
+        const format = result.youtubeFormat || 'link';
+        const markdownLink = format === 'thumbnail'
+          ? `![${metadata.title} - ${metadata.creator}](${metadata.url})`
+          : `[${metadata.title} - ${metadata.creator}](${metadata.url})`;
+        sendResponse({ metadata: metadata, markdownLink: markdownLink });
+      });
+    } else {
+      const markdownLink = formatMarkdownLink(metadata);
+      sendResponse({ metadata: metadata, markdownLink: markdownLink });
+    }
+    return true; // Keep the message channel open for asynchronous responses
   } else if (request.action === 'showNotification') {
     showNotification(request.message);
     sendResponse({ success: true });
