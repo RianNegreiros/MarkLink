@@ -91,22 +91,46 @@ function showNotification(message) {
   notification.style.top = '20px';
   notification.style.right = '20px';
   notification.style.padding = '12px 20px';
-  notification.style.borderRadius = '4px';
+  notification.style.borderRadius = '8px';
   notification.style.zIndex = '9999';
-  notification.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
-  notification.style.transition = 'opacity 0.3s';
+  notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+  notification.style.transition = 'all 0.3s ease';
+  notification.style.fontSize = '14px';
+  notification.style.fontWeight = '500';
+  notification.style.display = 'flex';
+  notification.style.alignItems = 'center';
+  notification.style.gap = '8px';
+
+  // Add checkmark icon
+  const checkmark = document.createElement('span');
+  checkmark.innerHTML = '✓';
+  checkmark.style.fontSize = '16px';
+  notification.insertBefore(checkmark, notification.firstChild);
+
   // Dark mode support
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     notification.style.backgroundColor = '#23272a';
     notification.style.color = '#f1f1f1';
-    notification.style.boxShadow = '0 2px 5px rgba(0,0,0,0.7)';
+    notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
   } else {
     notification.style.backgroundColor = '#4CAF50';
     notification.style.color = 'white';
   }
+
   document.body.appendChild(notification);
+
+  // Animate in
+  notification.style.opacity = '0';
+  notification.style.transform = 'translateY(-10px)';
+  requestAnimationFrame(() => {
+    notification.style.opacity = '1';
+    notification.style.transform = 'translateY(0)';
+  });
+
+  // Remove after delay
   setTimeout(() => {
     notification.style.opacity = '0';
+    notification.style.transform = 'translateY(-10px)';
     setTimeout(() => {
       document.body.removeChild(notification);
     }, 300);
