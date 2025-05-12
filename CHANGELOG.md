@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2025-05-12
+
+### Added
+
+- New click behavior option to choose between immediate action and popup UI
+- Enhanced notification system with animations and better visibility
+- Added click behavior preference in options page
+
+### Changed
+
+- Default behavior now copies link immediately when clicking the extension icon
+- Improved options page UI with new click behavior settings
+- Updated background script to handle both immediate and popup behaviors
+
 ## [1.3.2] - 2025-05-07
 
 ### Added

@@ -7,6 +7,24 @@ A browser extension that generates formatted Markdown links for Obsidian notes w
 - One-click operation: Generate and copy Markdown links instantly
 - Format preservation: Links follow the standard `[Page Title - Creator name](https://example.com)` format
 - Automatic metadata extraction: Pulls page title and attempts to identify creator/author
+- Flexible click behavior: Choose between immediate action or popup UI
+- Enhanced notifications: Beautiful animated notifications when links are copied
+
+## Click Behavior Options
+
+MarkLink offers two ways to interact with the extension:
+
+1. **Immediate Action (Default)**
+   - Click the extension icon to instantly copy the Markdown link
+   - Shows a notification when the link is copied
+   - Perfect for quick, one-handed operation
+
+2. **Popup UI**
+   - Click the extension icon to open a popup
+   - Preview the link before copying
+   - Access additional options and settings
+
+You can change this behavior in the extension options.
 
 ## Metadata Extraction
 
@@ -70,9 +88,18 @@ Note: Temporary installations will be removed when Firefox is restarted. Unlike 
 
 1. Navigate to a webpage or video you want to save to Obsidian
 2. Click the MarkLink icon in your browser toolbar
-3. In the popup that appears, click the "Copy as Markdown Link" button
-4. The formatted Markdown link is copied to your clipboard
-5. Paste the link into your Obsidian document
+   - By default, this will immediately copy the link
+   - If you prefer the popup UI, you can change this in the options
+3. The formatted Markdown link is copied to your clipboard
+4. Paste the link into your Obsidian document
+
+## Customization
+
+MarkLink can be customized through the options page:
+
+- **Click Behavior**: Choose between immediate action or popup UI
+- **YouTube Format**: Select between regular links or thumbnail previews
+- **Keyboard Shortcut**: Customize the default Alt+M shortcut
 
 ## Troubleshooting
 

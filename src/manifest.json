@@ -20,8 +20,7 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     },
-    "default_title": "Copy as Markdown link",
-    "default_popup": "popup.html"
+    "default_title": "Copy as Markdown link"
   },
   "options_ui": {
     "page": "options.html",
@@ -34,9 +33,7 @@
     "storage"
   ],
   "background": {
-    "scripts": [
-      "background.js"
-    ]
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
@@ -45,6 +42,16 @@
       ],
       "js": [
         "content.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "popup.html"
+      ],
+      "matches": [
+        "<all_urls>"
       ]
     }
   ],

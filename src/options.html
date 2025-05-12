@@ -300,6 +300,38 @@
         padding: 16px;
       }
     }
+
+    .option-group {
+      margin-bottom: 24px;
+      padding: 20px;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+
+    .option-group h3 {
+      margin-bottom: 16px;
+      color: var(--dark);
+      font-size: 18px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .option-row label {
+      margin-left: 8px;
+      font-size: 15px;
+    }
+
+    .option-description {
+      font-size: 14px;
+      color: var(--secondary);
+      margin-top: 4px;
+      margin-left: 28px;
+    }
   </style>
 </head>
 
@@ -312,6 +344,33 @@
   </header>
 
   <main class="container">
+    <div class="option-group">
+      <h3>Click Behavior</h3>
+      <div class="option-row">
+        <input type="radio" id="immediateAction" name="clickBehavior" value="immediate">
+        <label for="immediateAction">Copy link immediately when clicking the extension icon</label>
+      </div>
+      <div class="option-description">Shows a notification when the link is copied</div>
+
+      <div class="option-row">
+        <input type="radio" id="showPopup" name="clickBehavior" value="popup">
+        <label for="showPopup">Show popup UI when clicking the extension icon</label>
+      </div>
+      <div class="option-description">Opens a popup where you can copy the link and see a preview</div>
+    </div>
+
+    <div class="option-group">
+      <h3>YouTube Link Format</h3>
+      <div class="option-row">
+        <input type="radio" id="linkFormat" name="youtubeFormat" value="link">
+        <label for="linkFormat">Regular link format</label>
+      </div>
+      <div class="option-row">
+        <input type="radio" id="thumbnailFormat" name="youtubeFormat" value="thumbnail">
+        <label for="thumbnailFormat">Thumbnail preview format</label>
+      </div>
+    </div>
+
     <div class="card">
       <h2>Keyboard Shortcut</h2>
       <p>MarkLink comes with a default keyboard shortcut: <code>Alt+M</code></p>
@@ -339,26 +398,6 @@
         <li>Click the MarkLink icon in your browser toolbar</li>
         <li>Right-click on any page and select "Copy as Markdown Link"</li>
       </ul>
-    </div>
-
-    <div class="card">
-      <h2>Link Format Preferences</h2>
-      <p>Choose how links should be formatted in your Markdown:</p>
-
-      <div class="format-section">
-        <h3>YouTube Videos</h3>
-        <div class="format-options">
-          <label class="format-option">
-            <input type="radio" name="youtubeFormat" value="link" checked>
-            <span>Regular link: [Title - Channel](URL)</span>
-          </label>
-          <label class="format-option">
-            <input type="radio" name="youtubeFormat" value="thumbnail">
-            <span>With thumbnail: ![Title - Channel](URL)</span>
-          </label>
-        </div>
-      </div>
-
     </div>
   </main>
 

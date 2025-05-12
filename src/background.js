@@ -11,6 +11,39 @@ browserAPI.runtime.onInstalled.addListener(() => {
     title: "Copy as Markdown Link",
     contexts: ["page", "link"]
   });
+
+  // Set default click behavior to immediate
+  browserAPI.storage.sync.get(['clickBehavior'], (result) => {
+    if (!result.clickBehavior) {
+      browserAPI.storage.sync.set({ clickBehavior: 'immediate' });
+    }
+  });
+});
+
+// Handle extension icon click
+browserAPI.action.onClicked.addListener((tab) => {
+  if (tab.url.startsWith('chrome://') ||
+    tab.url.startsWith('edge://') ||
+    tab.url.startsWith('about:') ||
+    tab.url.startsWith('moz-extension://')) {
+    return;
+  }
+
+  // Check user's preferred click behavior
+  browserAPI.storage.sync.get(['clickBehavior'], (result) => {
+    if (result.clickBehavior === 'popup') {
+      // Open popup UI
+      browserAPI.action.setPopup({ popup: 'popup.html' });
+      browserAPI.action.openPopup();
+      // Reset popup to null after opening to maintain immediate action capability
+      setTimeout(() => {
+        browserAPI.action.setPopup({ popup: '' });
+      }, 100);
+    } else {
+      // Default to immediate action
+      generateMarkdownLinkFromTab(tab);
+    }
+  });
 });
 
 // Handle keyboard shortcuts
@@ -47,6 +80,11 @@ function generateMarkdownLinkFromTab(tab) {
 
     if (response && response.markdownLink) {
       copyToClipboard(response.markdownLink);
+      // Show notification in the content script
+      browserAPI.tabs.sendMessage(tab.id, {
+        action: "showNotification",
+        message: "Markdown link copied to clipboard!"
+      });
     }
   });
 }
