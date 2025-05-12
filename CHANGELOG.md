@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2025-05-12
+
+### Added
+
+- Support for extracting channel names from YouTube playlist pages
+- New selectors for YouTube playlist channel name detection
+
+### Changed
+
+- Refactored YouTube metadata extraction for better maintainability
+- Improved code organization with centralized selectors
+- Extended YouTube support to handle all YouTube page types (videos and playlists)
+
 ## [1.4.0] - 2025-05-12
 
 ### Added

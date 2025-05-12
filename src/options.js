@@ -3,9 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formatOptions = document.querySelectorAll('input[name="youtubeFormat"]');
   const clickBehaviorOptions = document.querySelectorAll('input[name="clickBehavior"]');
 
-  // Load saved preferences
   browserAPI.storage.sync.get(['youtubeFormat', 'clickBehavior'], (result) => {
-    // Set YouTube format preference
     if (result.youtubeFormat) {
       formatOptions.forEach(option => {
         if (option.value === result.youtubeFormat) {
@@ -14,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Set click behavior preference
     if (result.clickBehavior) {
       clickBehaviorOptions.forEach(option => {
         if (option.value === result.clickBehavior) {
@@ -22,12 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     } else {
-      // Default to immediate action if not set
       document.getElementById('immediateAction').checked = true;
     }
   });
 
-  // Save YouTube format preference when changed
   formatOptions.forEach(option => {
     option.addEventListener('change', (e) => {
       if (e.target.checked) {
@@ -36,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Save click behavior preference when changed
   clickBehaviorOptions.forEach(option => {
     option.addEventListener('change', (e) => {
       if (e.target.checked) {
@@ -44,4 +38,4 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-}); 
+});
