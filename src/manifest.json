@@ -48,7 +48,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "popup.html"
+        "popup.html",
+        "privacy.html"
       ],
       "matches": [
         "<all_urls>"
