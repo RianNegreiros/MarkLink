@@ -2,86 +2,92 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.2] - 2025-05-19
+
+### Added
+
+- Privacy policy
+- Privacy policy link in options page
+- Privacy section in README
+
+### Changed
+
+- Added footer to options page with privacy and GitHub links
+
 ## [1.4.1] - 2025-05-12
 
 ### Added
 
-- Support for extracting channel names from YouTube playlist pages
-- New selectors for YouTube playlist channel name detection
+- YouTube playlist channel name support
+- New YouTube playlist selectors
 
 ### Changed
 
-- Refactored YouTube metadata extraction for better maintainability
-- Improved code organization with centralized selectors
-- Extended YouTube support to handle all YouTube page types (videos and playlists)
+- Refactored YouTube metadata extraction
+- Centralized YouTube selectors
 
 ## [1.4.0] - 2025-05-12
 
 ### Added
 
-- New click behavior option to choose between immediate action and popup UI
-- Enhanced notification system with animations and better visibility
-- Added click behavior preference in options page
+- Option to choose between immediate copy and popup UI
+- Click behavior preference in options
 
 ### Changed
 
-- Default behavior now copies link immediately when clicking the extension icon
-- Improved options page UI with new click behavior settings
-- Updated background script to handle both immediate and popup behaviors
+- Default to immediate copy on icon click
+- Updated background script for both behaviors
 
 ## [1.3.2] - 2025-05-07
 
 ### Added
 
-- New option to format YouTube links with video thumbnails
-- Added settings page with YouTube link format preference
-- Added storage permission for saving user preferences
+- YouTube thumbnail link format option
+- Settings page for YouTube format preference
+- Storage permission for preferences
 
 ### Changed
 
-- Updated YouTube link formatting to support thumbnail previews
-- Improved options page UI with new format selection controls
+- Updated YouTube link formatting
 
 ## [1.2.1] - 2025-05-06
 
 ### Changed
 
-- Updated Firefox installation instructions with clearer guidance on installation options
-- Simplified explanation of Firefox extension signing requirements
+- Updated Firefox installation instructions
 
 ### Fixed
 
-- Consolidated temporary and permanent installation options in documentation
+- Documentation for Firefox installation options
 
 ## [1.2.0] - 2025-04-24
 
-### Changed
-
-- Refactored codebase for clarity and maintainability
-- Modularized content script extraction logic
-- Improved popup and notification dark mode support
-- Cleaned up and simplified popup UI and code
-
 ### Added
 
-- Dark mode support (follows system preference)
+- Dark mode support
+
+### Changed
+
+- Refactored codebase
+- Modularized content script
+- Updated popup UI
 
 ## [1.1.0] - 2025-04-17
 
 ### Added
 
-- Keyboard shortcut (Alt+M) to quickly copy Markdown links
-- Right-click context menu option to copy Markdown links
-- Special handling for YouTube videos to include channel name in Markdown link
+- Alt+M keyboard shortcut
+- Context menu option
+- YouTube channel name in links
 
-### Improved
+### Changed
 
-- Copy to clipboard now handled in content script for better compatibility
+- Moved clipboard handling to content script
 
-## [1.0.0] - 2024-04-16
+## [1.0.0] - 2025-04-16
 
 ### Added
 
-- Initial release: Generate Markdown links for any website
-- Basic extraction of page title and author meta tags
-- Documentation and product design
+- Basic Markdown link generation
+- Page title and author extraction
+- Initial documentation

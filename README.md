@@ -1,14 +1,14 @@
 # MarkLink
 
-A browser extension that generates formatted Markdown links for Obsidian notes with one click.
+A browser extension that generates formatted Markdown links with one click.
 
 ## Features
 
 - Instant Markdown link generation with `[Title - Creator](URL)` format
 - Automatic metadata extraction (page title, author/creator)
-- Two operation modes: Direct copy or popup UI
-- Smart metadata handling for YouTube and Medium content
-- Beautiful copy notifications
+- Dark mode support
+- YouTube playlist support
+- Keyboard shortcut (Alt+M)
 
 ## Installation
 
@@ -27,7 +27,10 @@ Note: Requires Mozilla signing for permanent installation.
 ## Usage
 
 1. Visit a webpage
-2. Click the MarkLink icon
+2. Use any of these methods:
+   - Click the MarkLink icon
+   - Press Alt+M
+   - Right-click and select "Copy as Markdown Link"
 3. Paste the generated link in Obsidian
 
 ## Settings
@@ -38,8 +41,21 @@ Access the options page to customize:
 - YouTube link format (regular/thumbnail preview)
 - Link format preferences
 
+You can also access the Privacy Policy and GitHub repository links from the options page footer.
+
+## Privacy
+
+MarkLink is designed with privacy in mind:
+
+- No data collection or tracking
+- All settings stored locally
+- No third-party services or analytics
+- Minimal permissions required
+
+For detailed information, please read our [Privacy Policy](src/privacy.html).
+
 ## Metadata Handling
 
 - **General websites**: Extracts from meta tags
-- **YouTube**: Video title and channel name
+- **YouTube**: Video title and channel name (including playlists)
 - **Medium**: Article title and author
