@@ -5,7 +5,7 @@
   "description": "Quickly generate links for your Markdown notes from web content.",
   "browser_specific_settings": {
     "gecko": {
-      "id": "marklink@example.com",
+      "id": "marklink@riannegreiros.xyz",
       "strict_min_version": "109.0"
     }
   },
@@ -33,7 +33,9 @@
     "storage"
   ],
   "background": {
-    "service_worker": "background.js"
+    "scripts": [
+      "background.js"
+    ]
   },
   "content_scripts": [
     {
