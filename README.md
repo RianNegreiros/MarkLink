@@ -1,14 +1,14 @@
 # MarkLink
 
-A browser extension that generates formatted Markdown links with one click.
+A browser extension for Chrome and Firefox that generates formatted Markdown links with one click.
 
 ## Features
 
 - Instant Markdown link generation with `[Title - Creator](URL)` format
 - Automatic metadata extraction (page title, author/creator)
-- Dark mode support
 - YouTube playlist support
 - Keyboard shortcut (Alt+M)
+- **Works on both Chrome and Firefox**
 
 ## Installation
 
@@ -20,9 +20,17 @@ A browser extension that generates formatted Markdown links with one click.
 
 ### Firefox
 
-Temporary install via `about:debugging` > "This Firefox" > "Load Temporary Add-on" > select `manifest.json`
+You can install MarkLink in Firefox in two ways:
 
-Note: Requires Mozilla signing for permanent installation.
+**Option 1: Install from the Firefox Add-ons Store**
+
+- Visit the [Firefox Add-ons Store page](https://addons.mozilla.org/en-US/firefox/addon/marklink/) and click "Add to Firefox".
+
+**Option 2: Install manually from GitHub**
+
+- Download the latest `.xpi` file from the [GitHub Releases page](https://github.com/riannegreiros/marklink/releases).
+- Open `about:addons` in Firefox, click the gear icon, and choose "Install Add-on From File..."
+- Select the downloaded `.xpi` file to install MarkLink permanently.
 
 ## Usage
 
@@ -31,7 +39,7 @@ Note: Requires Mozilla signing for permanent installation.
    - Click the MarkLink icon
    - Press Alt+M
    - Right-click and select "Copy as Markdown Link"
-3. Paste the generated link in Obsidian
+3. Paste the generated link in Obsidian (or any Markdown editor)
 
 ## Settings
 

@@ -1,6 +1,16 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## [1.4.3] - 2025-07-10
+
+### Added
+
+- Updated documentation and options page to reflect cross-browser support
+- MarkLink can now be installed permanently in Firefox via the .xpi from GitHub releases or from the Firefox Add-ons Store ([link](https://addons.mozilla.org/en-US/firefox/addon/marklink/))
+
+### Changed
+
+- Keyboard shortcut instructions now include both Chrome and Firefox
+- README and UI text updated to clarify multi-browser compatibility
 
 ## [1.4.2] - 2025-05-19
 
