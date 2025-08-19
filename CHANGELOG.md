@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.4] - 2025-08-19
+
+### Added
+
+- Added `"scripting"` permission for MV3 clipboard execution in Chrome.
+
+### Changed
+
+- Clipboard flow now uses `chrome.scripting.executeScript` on MV3 with a Firefox-friendly fallback to content script messaging.
+- Consistent error handling with structured logging in `src/background.js` and `src/content.js`.
+
+### Fixed
+
+- Resolved Chrome MV3 error by migrating `background.scripts` to `background.service_worker` in `src/manifest.json`, preserving Firefox compatibility.
+- Graceful fallback when content scripts cannot run on restricted/internal pages.
+- Avoided `[object Object]` console errors by logging explicit messages.
+
 ## [1.4.3] - 2025-07-10
 
 ### Added
