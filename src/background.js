@@ -1,5 +1,21 @@
 const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
 
+function errorMessage(error) {
+  if (!error) return '';
+  if (typeof error === 'string') return error;
+  if (error && typeof error.message === 'string') return error.message;
+  try {
+    return JSON.stringify(error);
+  } catch (_e) {
+    return String(error);
+  }
+}
+
+function logError(context, error) {
+  const message = errorMessage(error);
+  console.error(`${context}: ${message}`);
+}
+
 browserAPI.runtime.onInstalled.addListener(() => {
   browserAPI.contextMenus.create({
     id: "copyAsMarkdownLink",
@@ -8,8 +24,16 @@ browserAPI.runtime.onInstalled.addListener(() => {
   });
 
   browserAPI.storage.sync.get(['clickBehavior'], (result) => {
-    if (!result.clickBehavior) {
-      browserAPI.storage.sync.set({ clickBehavior: 'immediate' });
+    if (browserAPI.runtime.lastError) {
+      logError('storage.get(clickBehavior)', browserAPI.runtime.lastError);
+      return;
+    }
+    if (!result || !result.clickBehavior) {
+      browserAPI.storage.sync.set({ clickBehavior: 'immediate' }, () => {
+        if (browserAPI.runtime.lastError) {
+          logError('storage.set(clickBehavior)', browserAPI.runtime.lastError);
+        }
+      });
     }
   });
 });
@@ -23,9 +47,19 @@ browserAPI.action.onClicked.addListener((tab) => {
   }
 
   browserAPI.storage.sync.get(['clickBehavior'], (result) => {
+    if (browserAPI.runtime.lastError) {
+      logError('storage.get(clickBehavior) onClick', browserAPI.runtime.lastError);
+      // Fallback to immediate action on error
+      generateMarkdownLinkFromTab(tab);
+      return;
+    }
     if (result.clickBehavior === 'popup') {
       browserAPI.action.setPopup({ popup: 'popup.html' });
-      browserAPI.action.openPopup();
+      try {
+        browserAPI.action.openPopup();
+      } catch (e) {
+        logError('action.openPopup', e);
+      }
       // Reset popup to null after opening to maintain immediate action capability
       setTimeout(() => {
         browserAPI.action.setPopup({ popup: '' });
@@ -39,6 +73,10 @@ browserAPI.action.onClicked.addListener((tab) => {
 browserAPI.commands.onCommand.addListener((command) => {
   if (command === "copy-as-markdown") {
     browserAPI.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (browserAPI.runtime.lastError) {
+        logError('tabs.query(active currentWindow)', browserAPI.runtime.lastError);
+        return;
+      }
       if (tabs[0]) {
         generateMarkdownLinkFromTab(tabs[0]);
       }
@@ -61,7 +99,11 @@ browserAPI.contextMenus.onClicked.addListener((info, tab) => {
 function generateMarkdownLinkFromTab(tab) {
   browserAPI.tabs.sendMessage(tab.id, { action: "getMetadata" }, (response) => {
     if (browserAPI.runtime.lastError) {
-      console.error('Error:', browserAPI.runtime.lastError);
+      // Fallback for pages where content scripts cannot run (e.g., Chrome Web Store, internal pages)
+      const fallbackTitle = tab.title || tab.url || 'Link';
+      const fallbackUrl = tab.url || '';
+      const markdownLink = `[${fallbackTitle}](${fallbackUrl})`;
+      copyToClipboard(markdownLink);
       return;
     }
 
@@ -70,6 +112,10 @@ function generateMarkdownLinkFromTab(tab) {
       browserAPI.tabs.sendMessage(tab.id, {
         action: "showNotification",
         message: "Markdown link copied to clipboard!"
+      }, () => {
+        if (browserAPI.runtime.lastError) {
+          logError('tabs.sendMessage(showNotification)', browserAPI.runtime.lastError);
+        }
       });
     }
   });
@@ -83,18 +129,58 @@ function fetchTitleAndCreateLink(url) {
 }
 
 function copyToClipboard(text) {
-  // Use navigator.clipboard API through a content script since background scripts
-  // don't have access to the clipboard API directly
   browserAPI.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (tabs[0]) {
-      browserAPI.tabs.sendMessage(tabs[0].id, {
-        action: "copyToClipboard",
-        text: text
-      }, () => {
-        if (browserAPI.runtime.lastError) {
-          console.error('Error sending message:', browserAPI.runtime.lastError);
-        }
-      });
+    const activeTab = tabs && tabs[0];
+    if (!activeTab) {
+      return;
     }
+
+    // Try MV3-friendly executeScript first (Chrome), fallback to message for Firefox
+    const runClipboard = () => {
+      try {
+        if (browserAPI.scripting && browserAPI.scripting.executeScript) {
+          browserAPI.scripting.executeScript({
+            target: { tabId: activeTab.id },
+            func: (t) => {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(t);
+              }
+              const textarea = document.createElement('textarea');
+              textarea.value = t;
+              textarea.style.position = 'fixed';
+              textarea.style.top = '-9999px';
+              document.body.appendChild(textarea);
+              textarea.focus();
+              textarea.select();
+              document.execCommand('copy');
+              document.body.removeChild(textarea);
+              return Promise.resolve();
+            },
+            args: [text]
+          }, () => {
+            if (browserAPI.runtime.lastError) {
+              logError('Clipboard executeScript', browserAPI.runtime.lastError);
+            } else {
+              browserAPI.tabs.sendMessage(activeTab.id, { action: "showNotification", message: "Markdown link copied to clipboard!" }, () => {
+                if (browserAPI.runtime.lastError) {
+                  logError('tabs.sendMessage(showNotification)', browserAPI.runtime.lastError);
+                }
+              });
+            }
+          });
+        } else {
+          // Firefox fallback: message the content script handler
+          browserAPI.tabs.sendMessage(activeTab.id, { action: "copyToClipboard", text }, () => {
+            if (browserAPI.runtime.lastError) {
+              logError('Clipboard message to content script', browserAPI.runtime.lastError);
+            }
+          });
+        }
+      } catch (e) {
+        logError('Clipboard exception', e);
+      }
+    };
+
+    runClipboard();
   });
 }
