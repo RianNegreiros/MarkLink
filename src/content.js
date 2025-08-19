@@ -1,5 +1,21 @@
 const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
 
+function errorMessage(error) {
+  if (!error) return '';
+  if (typeof error === 'string') return error;
+  if (error && typeof error.message === 'string') return error.message;
+  try {
+    return JSON.stringify(error);
+  } catch (_e) {
+    return String(error);
+  }
+}
+
+function logError(context, error) {
+  const message = errorMessage(error);
+  console.error(`${context}: ${message}`);
+}
+
 // Core selectors for YouTube channel names, ordered from most specific to most general
 const YOUTUBE_CHANNEL_SELECTORS = [
   'ytd-video-owner-renderer #channel-name a',
@@ -64,6 +80,10 @@ function formatMarkdownLink(metadata) {
 
   if (window.location.href.includes('youtube.com/')) {
     return browserAPI.storage.sync.get(['youtubeFormat'], (result) => {
+      if (browserAPI.runtime.lastError) {
+        logError('storage.get(youtubeFormat)', browserAPI.runtime.lastError);
+        return `[${formattedTitle}](${metadata.url})`;
+      }
       const format = result.youtubeFormat || 'link';
       return format === 'thumbnail'
         ? `![${formattedTitle}](${metadata.url})`
@@ -118,41 +138,80 @@ function showNotification(message) {
 }
 
 function copyTextToClipboard(text) {
-  navigator.clipboard.writeText(text)
-    .then(() => showNotification('Markdown link copied to clipboard!'))
-    .catch(err => {
-      console.error('Could not copy text: ', err);
-      showNotification('Failed to copy to clipboard: ' + err);
-    });
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(() => showNotification('Markdown link copied to clipboard!'))
+      .catch((e) => {
+        logError('navigator.clipboard.writeText', e);
+        legacyClipboardFallback(text);
+      });
+  } else {
+    legacyClipboardFallback(text);
+  }
+}
+
+function legacyClipboardFallback(text) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.top = '-9999px';
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  try {
+    const successful = document.execCommand('copy');
+    if (successful) {
+      showNotification('Markdown link copied to clipboard!');
+    } else {
+      showNotification('Failed to copy to clipboard');
+    }
+  } catch (err) {
+    logError('document.execCommand(copy)', err);
+    showNotification('Failed to copy to clipboard: ' + errorMessage(err));
+  } finally {
+    document.body.removeChild(textarea);
+  }
 }
 
 // Message listener for popup and background script communication
 browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'getMetadata') {
-    const metadata = extractMetadata();
-    if (window.location.href.includes('youtube.com/')) {
-      browserAPI.storage.sync.get(['youtubeFormat'], (result) => {
-        const format = result.youtubeFormat || 'link';
-        const markdownLink = format === 'thumbnail'
-          ? `![${metadata.title} - ${metadata.creator}](${metadata.url})`
-          : `[${metadata.title} - ${metadata.creator}](${metadata.url})`;
+  try {
+    if (request.action === 'getMetadata') {
+      const metadata = extractMetadata();
+      if (window.location.href.includes('youtube.com/')) {
+        browserAPI.storage.sync.get(['youtubeFormat'], (result) => {
+          if (browserAPI.runtime.lastError) {
+            logError('storage.get(youtubeFormat)', browserAPI.runtime.lastError);
+            const markdownLink = `[${metadata.title} - ${metadata.creator}](${metadata.url})`;
+            sendResponse({ metadata, markdownLink });
+            return;
+          }
+          const format = result.youtubeFormat || 'link';
+          const markdownLink = format === 'thumbnail'
+            ? `![${metadata.title} - ${metadata.creator}](${metadata.url})`
+            : `[${metadata.title} - ${metadata.creator}](${metadata.url})`;
+          sendResponse({ metadata, markdownLink });
+        });
+      } else {
+        const markdownLink = formatMarkdownLink(metadata);
         sendResponse({ metadata, markdownLink });
-      });
-    } else {
-      const markdownLink = formatMarkdownLink(metadata);
-      sendResponse({ metadata, markdownLink });
+      }
+      return true; // Keep the message channel open for asynchronous responses
     }
-    return true; // Keep the message channel open for asynchronous responses
-  }
 
-  if (request.action === 'showNotification') {
-    showNotification(request.message);
-    sendResponse({ success: true });
-  }
+    if (request.action === 'showNotification') {
+      showNotification(request.message);
+      sendResponse({ success: true });
+      return true;
+    }
 
-  if (request.action === 'copyToClipboard') {
-    copyTextToClipboard(request.text);
-    sendResponse({ success: true });
+    if (request.action === 'copyToClipboard') {
+      copyTextToClipboard(request.text);
+      sendResponse({ success: true });
+      return true;
+    }
+  } catch (e) {
+    logError('runtime.onMessage handler', e);
   }
 
   return true; // Keep the message channel open for asynchronous responses
