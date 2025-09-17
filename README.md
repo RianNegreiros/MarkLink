@@ -7,6 +7,7 @@ A browser extension for Chrome and Firefox that generates formatted Markdown lin
 - Instant Markdown link generation with `[Title - Creator](URL)` format
 - Automatic metadata extraction (page title, author/creator)
 - YouTube playlist support
+- YouTube links strip resume-time params (`t`, `time_continue`, `start`, `end`, `#t=`)
 - Keyboard shortcut (Alt+M)
 - **Works on both Chrome and Firefox**
 
@@ -65,5 +66,5 @@ For detailed information, please read our [Privacy Policy](src/privacy.html).
 ## Metadata Handling
 
 - **General websites**: Extracts from meta tags
-- **YouTube**: Video title and channel name (including playlists)
+- **YouTube**: Video title and channel name (including playlists). Generated links automatically remove timing parameters so they don’t resume mid-video.
 - **Medium**: Article title and author

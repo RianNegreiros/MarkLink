@@ -49,7 +49,6 @@ browserAPI.action.onClicked.addListener((tab) => {
   browserAPI.storage.sync.get(['clickBehavior'], (result) => {
     if (browserAPI.runtime.lastError) {
       logError('storage.get(clickBehavior) onClick', browserAPI.runtime.lastError);
-      // Fallback to immediate action on error
       generateMarkdownLinkFromTab(tab);
       return;
     }
@@ -60,7 +59,6 @@ browserAPI.action.onClicked.addListener((tab) => {
       } catch (e) {
         logError('action.openPopup', e);
       }
-      // Reset popup to null after opening to maintain immediate action capability
       setTimeout(() => {
         browserAPI.action.setPopup({ popup: '' });
       }, 100);
@@ -87,10 +85,8 @@ browserAPI.commands.onCommand.addListener((command) => {
 browserAPI.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "copyAsMarkdownLink") {
     if (info.linkUrl) {
-      // If user right-clicked on a link
       fetchTitleAndCreateLink(info.linkUrl);
     } else {
-      // If user right-clicked anywhere else on the page
       generateMarkdownLinkFromTab(tab);
     }
   }
@@ -99,7 +95,6 @@ browserAPI.contextMenus.onClicked.addListener((info, tab) => {
 function generateMarkdownLinkFromTab(tab) {
   browserAPI.tabs.sendMessage(tab.id, { action: "getMetadata" }, (response) => {
     if (browserAPI.runtime.lastError) {
-      // Fallback for pages where content scripts cannot run (e.g., Chrome Web Store, internal pages)
       const fallbackTitle = tab.title || tab.url || 'Link';
       const fallbackUrl = tab.url || '';
       const markdownLink = `[${fallbackTitle}](${fallbackUrl})`;
@@ -121,8 +116,6 @@ function generateMarkdownLinkFromTab(tab) {
   });
 }
 
-// Simple implementation - using URL as the title
-// A more sophisticated approach would fetch the page and extract its title
 function fetchTitleAndCreateLink(url) {
   const markdownLink = `[${url}](${url})`;
   copyToClipboard(markdownLink);
@@ -135,7 +128,6 @@ function copyToClipboard(text) {
       return;
     }
 
-    // Try MV3-friendly executeScript first (Chrome), fallback to message for Firefox
     const runClipboard = () => {
       try {
         if (browserAPI.scripting && browserAPI.scripting.executeScript) {
@@ -169,7 +161,6 @@ function copyToClipboard(text) {
             }
           });
         } else {
-          // Firefox fallback: message the content script handler
           browserAPI.tabs.sendMessage(activeTab.id, { action: "copyToClipboard", text }, () => {
             if (browserAPI.runtime.lastError) {
               logError('Clipboard message to content script', browserAPI.runtime.lastError);

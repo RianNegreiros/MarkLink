@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.5] - 2025-09-17
+
+### Changed
+
+- Clean YouTube URLs by removing resume-time parameters (`t`, `time_continue`, `start`, `end`) and `#t=` fragments when generating links.
+
 ## [1.4.4] - 2025-08-19
 
 ### Added
