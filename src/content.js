@@ -16,7 +16,6 @@ function logError(context, error) {
   console.error(`${context}: ${message}`);
 }
 
-// Core selectors for YouTube channel names, ordered from most specific to most general
 const YOUTUBE_CHANNEL_SELECTORS = [
   'ytd-video-owner-renderer #channel-name a',
   'ytd-channel-name yt-formatted-string a',
@@ -36,9 +35,30 @@ function findYouTubeChannelName() {
 }
 
 function extractYouTubeMetadata() {
+  const cleanYouTubeUrl = (rawUrl) => {
+    try {
+      const urlObj = new URL(rawUrl);
+
+      const timingParams = ['t', 'time_continue', 'start', 'end'];
+      for (const param of timingParams) {
+        if (urlObj.searchParams.has(param)) {
+          urlObj.searchParams.delete(param);
+        }
+      }
+
+      if (urlObj.hash && /(^#t=|[&#]t=)/i.test(urlObj.hash)) {
+        urlObj.hash = '';
+      }
+
+      return urlObj.toString();
+    } catch (_e) {
+      return rawUrl;
+    }
+  };
+
   return {
     title: document.title.replace(' - YouTube', ''),
-    url: window.location.href,
+    url: cleanYouTubeUrl(window.location.href),
     creator: findYouTubeChannelName()
   };
 }
@@ -173,7 +193,6 @@ function legacyClipboardFallback(text) {
   }
 }
 
-// Message listener for popup and background script communication
 browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
   try {
     if (request.action === 'getMetadata') {
@@ -196,7 +215,7 @@ browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const markdownLink = formatMarkdownLink(metadata);
         sendResponse({ metadata, markdownLink });
       }
-      return true; // Keep the message channel open for asynchronous responses
+      return true;
     }
 
     if (request.action === 'showNotification') {
@@ -214,5 +233,5 @@ browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
     logError('runtime.onMessage handler', e);
   }
 
-  return true; // Keep the message channel open for asynchronous responses
+  return true;
 }); 
