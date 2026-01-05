@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
   "name": "MarkLink",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "description": "Quickly generate links for your Markdown notes from web content.",
   "browser_specific_settings": {
     "gecko": {
-      "id": "marklink@riannegreiros.xyz",
+      "id": "marklink@riannegreiros.com.br",
       "strict_min_version": "109.0"
     }
   },
@@ -22,47 +22,20 @@
     },
     "default_title": "Copy as Markdown link"
   },
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": true
-  },
-  "permissions": [
-    "activeTab",
-    "clipboardWrite",
-    "contextMenus",
-    "storage",
-    "scripting"
-  ],
+  "permissions": ["activeTab", "clipboardWrite", "contextMenus"],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content.js"
-      ]
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "popup.html",
-        "privacy.html"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
+      "matches": ["<all_urls>"]
     }
-  ],
-  "commands": {
-    "copy-as-markdown": {
-      "suggested_key": {
-        "default": "Alt+M"
-      },
-      "description": "Copy current page as Markdown link"
-    }
-  }
+  ]
 }
