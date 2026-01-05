@@ -1,237 +1,200 @@
-const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
+// Prevent multiple injections
+if (window.markLinkContentLoaded) {
+  // Script already loaded, exit silently
+} else {
+  window.markLinkContentLoaded = true;
 
-function errorMessage(error) {
-  if (!error) return '';
-  if (typeof error === 'string') return error;
-  if (error && typeof error.message === 'string') return error.message;
-  try {
-    return JSON.stringify(error);
-  } catch (_e) {
-    return String(error);
+  const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
+class MarkLinkContent {
+  constructor() {
+    this.initializeMessageListener();
   }
-}
 
-function logError(context, error) {
-  const message = errorMessage(error);
-  console.error(`${context}: ${message}`);
-}
-
-const YOUTUBE_CHANNEL_SELECTORS = [
-  'ytd-video-owner-renderer #channel-name a',
-  'ytd-channel-name yt-formatted-string a',
-  'ytd-playlist-header-renderer #channel-name a',
-  '#owner-name a',
-  'span.ytd-channel-name a'
-];
-
-function findYouTubeChannelName() {
-  for (const selector of YOUTUBE_CHANNEL_SELECTORS) {
-    const element = document.querySelector(selector);
-    if (element) {
-      return element.textContent.trim();
-    }
+  logError(context, error) {
+    console.error(`${context}: ${error?.message || error}`);
   }
-  return '';
-}
 
-function extractYouTubeMetadata() {
-  const cleanYouTubeUrl = (rawUrl) => {
+  extractYouTubeMetadata() {
+    const channelSelectors = [
+      "ytd-video-owner-renderer #channel-name a",
+      "ytd-channel-name yt-formatted-string a",
+      "ytd-playlist-header-renderer #channel-name a",
+      "#owner-name a",
+      "span.ytd-channel-name a",
+    ];
+
+    const channelElement = channelSelectors
+      .map((selector) => document.querySelector(selector))
+      .find((el) => el);
+
+    return {
+      title: document.title.replace(" - YouTube", ""),
+      url: this.cleanYouTubeUrl(window.location.href),
+      creator: channelElement?.textContent.trim() || "",
+    };
+  }
+
+  cleanYouTubeUrl(url) {
     try {
-      const urlObj = new URL(rawUrl);
-
-      const timingParams = ['t', 'time_continue', 'start', 'end'];
-      for (const param of timingParams) {
-        if (urlObj.searchParams.has(param)) {
-          urlObj.searchParams.delete(param);
-        }
-      }
-
-      if (urlObj.hash && /(^#t=|[&#]t=)/i.test(urlObj.hash)) {
-        urlObj.hash = '';
-      }
-
+      const urlObj = new URL(url);
+      ["t", "time_continue", "start", "end"].forEach((param) =>
+        urlObj.searchParams.delete(param),
+      );
+      if (urlObj.hash.includes("t=")) urlObj.hash = "";
       return urlObj.toString();
-    } catch (_e) {
-      return rawUrl;
+    } catch {
+      return url;
     }
-  };
-
-  return {
-    title: document.title.replace(' - YouTube', ''),
-    url: cleanYouTubeUrl(window.location.href),
-    creator: findYouTubeChannelName()
-  };
-}
-
-function extractMediumMetadata() {
-  const title = document.querySelector('h1')?.textContent.trim() || document.title;
-  const creator = document.querySelector('meta[name="author"]')?.getAttribute('content') ||
-    document.querySelector('header div[role="presentation"] a, header a.ds-link, header span a')?.textContent.trim() || '';
-
-  return { title, url: window.location.href, creator };
-}
-
-function extractGenericMetadata() {
-  const creator = document.querySelector('meta[name="author"], meta[property="article:author"], meta[name="twitter:creator"]')
-    ?.getAttribute('content') || '';
-
-  return {
-    title: document.title,
-    url: window.location.href,
-    creator
-  };
-}
-
-function extractMetadata() {
-  const url = window.location.href;
-  if (url.includes('youtube.com/')) {
-    return extractYouTubeMetadata();
   }
-  if (url.includes('medium.com/')) {
-    return extractMediumMetadata();
+
+  extractMediumMetadata() {
+    const title =
+      document.querySelector("h1")?.textContent.trim() || document.title;
+    const creatorSelectors = [
+      'meta[name="author"]',
+      'header div[role="presentation"] a',
+      "header a.ds-link",
+      "header span a",
+    ];
+
+    const creator =
+      creatorSelectors
+        .map((selector) => document.querySelector(selector))
+        .find((el) => el)
+        ?.textContent?.trim() || "";
+
+    return { title, url: window.location.href, creator };
   }
-  return extractGenericMetadata();
-}
 
-function formatMarkdownLink(metadata) {
-  const formattedTitle = metadata.creator && metadata.creator.trim() && !metadata.title.includes(metadata.creator)
-    ? `${metadata.title} - ${metadata.creator}`
-    : metadata.title;
+  extractGenericMetadata() {
+    const creatorMeta = document.querySelector(
+      'meta[name="author"], meta[property="article:author"], meta[name="twitter:creator"]',
+    );
 
-  if (window.location.href.includes('youtube.com/')) {
-    return browserAPI.storage.sync.get(['youtubeFormat'], (result) => {
-      if (browserAPI.runtime.lastError) {
-        logError('storage.get(youtubeFormat)', browserAPI.runtime.lastError);
-        return `[${formattedTitle}](${metadata.url})`;
-      }
-      const format = result.youtubeFormat || 'link';
-      return format === 'thumbnail'
-        ? `![${formattedTitle}](${metadata.url})`
-        : `[${formattedTitle}](${metadata.url})`;
+    return {
+      title: document.title,
+      url: window.location.href,
+      creator: creatorMeta?.getAttribute("content") || "",
+    };
+  }
+
+  extractMetadata() {
+    const url = window.location.href;
+    if (url.includes("youtube.com/")) return this.extractYouTubeMetadata();
+    if (url.includes("medium.com/")) return this.extractMediumMetadata();
+    return this.extractGenericMetadata();
+  }
+
+  formatMarkdownLink(metadata) {
+    const { title, creator, url } = metadata;
+    const formattedTitle =
+      creator && !title.includes(creator) ? `${title} - ${creator}` : title;
+
+    return `[${formattedTitle}](${url})`;
+  }
+
+  showNotification(message) {
+    const notification = document.createElement("div");
+    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    Object.assign(notification.style, {
+      position: "fixed",
+      top: "20px",
+      right: "20px",
+      padding: "12px 20px",
+      borderRadius: "8px",
+      zIndex: "9999",
+      fontSize: "14px",
+      fontWeight: "500",
+      backgroundColor: isDark ? "#23272a" : "#4CAF50",
+      color: isDark ? "#f1f1f1" : "white",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+      transition: "all 0.3s ease",
+      opacity: "0",
+      transform: "translateY(-10px)",
     });
+
+    notification.innerHTML = `<span style="margin-right: 8px;">✓</span>${message}`;
+    document.body.appendChild(notification);
+
+    requestAnimationFrame(() => {
+      notification.style.opacity = "1";
+      notification.style.transform = "translateY(0)";
+    });
+
+    setTimeout(() => {
+      notification.style.opacity = "0";
+      notification.style.transform = "translateY(-10px)";
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
   }
 
-  return `[${formattedTitle}](${metadata.url})`;
-}
-
-function showNotification(message) {
-  const notification = document.createElement('div');
-  const isDarkMode = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
-
-  Object.assign(notification.style, {
-    position: 'fixed',
-    top: '20px',
-    right: '20px',
-    padding: '12px 20px',
-    borderRadius: '8px',
-    zIndex: '9999',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-    transition: 'all 0.3s ease',
-    fontSize: '14px',
-    fontWeight: '500',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    backgroundColor: isDarkMode ? '#23272a' : '#4CAF50',
-    color: isDarkMode ? '#f1f1f1' : 'white',
-    boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.15)'
-  });
-
-  const checkmark = document.createElement('span');
-  checkmark.innerHTML = '✓';
-  checkmark.style.fontSize = '16px';
-  notification.insertBefore(checkmark, notification.firstChild);
-
-  notification.appendChild(document.createTextNode(message));
-  document.body.appendChild(notification);
-
-  requestAnimationFrame(() => {
-    notification.style.opacity = '1';
-    notification.style.transform = 'translateY(0)';
-  });
-
-  setTimeout(() => {
-    notification.style.opacity = '0';
-    notification.style.transform = 'translateY(-10px)';
-    setTimeout(() => notification.remove(), 300);
-  }, 3000);
-}
-
-function copyTextToClipboard(text) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text)
-      .then(() => showNotification('Markdown link copied to clipboard!'))
-      .catch((e) => {
-        logError('navigator.clipboard.writeText', e);
-        legacyClipboardFallback(text);
-      });
-  } else {
-    legacyClipboardFallback(text);
-  }
-}
-
-function legacyClipboardFallback(text) {
-  const textarea = document.createElement('textarea');
-  textarea.value = text;
-  textarea.style.position = 'fixed';
-  textarea.style.top = '-9999px';
-  document.body.appendChild(textarea);
-  textarea.focus();
-  textarea.select();
-  try {
-    const successful = document.execCommand('copy');
-    if (successful) {
-      showNotification('Markdown link copied to clipboard!');
-    } else {
-      showNotification('Failed to copy to clipboard');
+  async copyToClipboard(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      this.showNotification("Markdown link copied to clipboard!");
+    } catch (error) {
+      this.legacyClipboardCopy(text);
     }
-  } catch (err) {
-    logError('document.execCommand(copy)', err);
-    showNotification('Failed to copy to clipboard: ' + errorMessage(err));
-  } finally {
-    document.body.removeChild(textarea);
   }
-}
 
-browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  try {
-    if (request.action === 'getMetadata') {
-      const metadata = extractMetadata();
-      if (window.location.href.includes('youtube.com/')) {
-        browserAPI.storage.sync.get(['youtubeFormat'], (result) => {
-          if (browserAPI.runtime.lastError) {
-            logError('storage.get(youtubeFormat)', browserAPI.runtime.lastError);
-            const markdownLink = `[${metadata.title} - ${metadata.creator}](${metadata.url})`;
-            sendResponse({ metadata, markdownLink });
-            return;
-          }
-          const format = result.youtubeFormat || 'link';
-          const markdownLink = format === 'thumbnail'
-            ? `![${metadata.title} - ${metadata.creator}](${metadata.url})`
-            : `[${metadata.title} - ${metadata.creator}](${metadata.url})`;
-          sendResponse({ metadata, markdownLink });
-        });
+  legacyClipboardCopy(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.cssText = "position:fixed;top:-9999px;opacity:0;";
+    document.body.appendChild(textarea);
+    textarea.select();
+    textarea.setSelectionRange(0, 99999);
+
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        this.showNotification("Markdown link copied to clipboard!");
       } else {
-        const markdownLink = formatMarkdownLink(metadata);
-        sendResponse({ metadata, markdownLink });
+        this.showNotification("Failed to copy to clipboard");
       }
-      return true;
+    } catch (error) {
+      this.logError("clipboard fallback", error);
+      this.showNotification("Failed to copy to clipboard");
+    } finally {
+      document.body.removeChild(textarea);
     }
-
-    if (request.action === 'showNotification') {
-      showNotification(request.message);
-      sendResponse({ success: true });
-      return true;
-    }
-
-    if (request.action === 'copyToClipboard') {
-      copyTextToClipboard(request.text);
-      sendResponse({ success: true });
-      return true;
-    }
-  } catch (e) {
-    logError('runtime.onMessage handler', e);
   }
 
-  return true;
-}); 
+  initializeMessageListener() {
+    browserAPI.runtime.onMessage.addListener(
+      async (request, sender, sendResponse) => {
+        try {
+          switch (request.action) {
+            case "getMetadata":
+              const metadata = this.extractMetadata();
+              const markdownLink = this.formatMarkdownLink(metadata);
+              sendResponse({ metadata, markdownLink });
+              break;
+
+            case "showNotification":
+              this.showNotification(request.message);
+              sendResponse({ success: true });
+              break;
+
+            case "copyToClipboard":
+              await this.copyToClipboard(request.text);
+              sendResponse({ success: true });
+              break;
+          }
+        } catch (error) {
+          this.logError("message handler", error);
+          sendResponse({ error: error.message });
+        }
+        return true;
+      },
+    );
+  }
+}
+
+  // Only create instance if not already created
+  if (!window.markLinkInstance) {
+    window.markLinkInstance = new MarkLinkContent();
+  }
+}

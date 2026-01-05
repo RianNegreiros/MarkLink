@@ -1,177 +1,111 @@
-const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
+const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
-function errorMessage(error) {
-  if (!error) return '';
-  if (typeof error === 'string') return error;
-  if (error && typeof error.message === 'string') return error.message;
-  try {
-    return JSON.stringify(error);
-  } catch (_e) {
-    return String(error);
-  }
-}
-
-function logError(context, error) {
-  const message = errorMessage(error);
-  console.error(`${context}: ${message}`);
-}
-
-browserAPI.runtime.onInstalled.addListener(() => {
-  browserAPI.contextMenus.create({
-    id: "copyAsMarkdownLink",
-    title: "Copy as Markdown Link",
-    contexts: ["page", "link"]
-  });
-
-  browserAPI.storage.sync.get(['clickBehavior'], (result) => {
-    if (browserAPI.runtime.lastError) {
-      logError('storage.get(clickBehavior)', browserAPI.runtime.lastError);
-      return;
-    }
-    if (!result || !result.clickBehavior) {
-      browserAPI.storage.sync.set({ clickBehavior: 'immediate' }, () => {
-        if (browserAPI.runtime.lastError) {
-          logError('storage.set(clickBehavior)', browserAPI.runtime.lastError);
-        }
-      });
-    }
-  });
-});
-
-browserAPI.action.onClicked.addListener((tab) => {
-  if (tab.url.startsWith('chrome://') ||
-    tab.url.startsWith('edge://') ||
-    tab.url.startsWith('about:') ||
-    tab.url.startsWith('moz-extension://')) {
-    return;
+class MarkLinkBackground {
+  constructor() {
+    this.initializeExtension();
   }
 
-  browserAPI.storage.sync.get(['clickBehavior'], (result) => {
-    if (browserAPI.runtime.lastError) {
-      logError('storage.get(clickBehavior) onClick', browserAPI.runtime.lastError);
-      generateMarkdownLinkFromTab(tab);
-      return;
+  logError(context, error) {
+    console.error(`${context}: ${error?.message || error}`);
+  }
+
+  isRestrictedUrl(url) {
+    return ["chrome://", "edge://", "about:", "moz-extension://"].some(
+      (prefix) => url.startsWith(prefix),
+    );
+  }
+
+  initializeExtension() {
+    browserAPI.runtime.onInstalled.addListener(() => this.onInstalled());
+    browserAPI.action.onClicked.addListener((tab) => this.onActionClicked(tab));
+    browserAPI.contextMenus.onClicked.addListener((info, tab) =>
+      this.onContextMenu(info, tab),
+    );
+  }
+
+  onInstalled() {
+    browserAPI.contextMenus.create({
+      id: "copyAsMarkdownLink",
+      title: "Copy as Markdown Link",
+      contexts: ["page", "link"],
+    });
+  }
+
+  onActionClicked(tab) {
+    if (this.isRestrictedUrl(tab.url)) return;
+    this.generateMarkdownLink(tab);
+  }
+
+  onContextMenu(info, tab) {
+    if (info.menuItemId === "copyAsMarkdownLink") {
+      if (info.linkUrl) {
+        this.copyToClipboard(`[${info.linkUrl}](${info.linkUrl})`);
+      } else {
+        this.generateMarkdownLink(tab);
+      }
     }
-    if (result.clickBehavior === 'popup') {
-      browserAPI.action.setPopup({ popup: 'popup.html' });
+  }
+
+  async generateMarkdownLink(tab) {
+    try {
+      const response = await this.sendMessage(tab.id, { action: "getMetadata" });
+      if (response?.markdownLink) {
+        await this.copyToClipboard(response.markdownLink);
+        this.showNotification(tab.id, "Markdown link copied to clipboard!");
+      } else {
+        this.copyFallbackLink(tab);
+      }
+    } catch (error) {
+      this.copyFallbackLink(tab);
+    }
+  }
+
+  copyFallbackLink(tab) {
+    const fallbackLink = `[${tab.title || "Link"}](${tab.url})`;
+    this.copyToClipboard(fallbackLink);
+  }
+
+  sendMessage(tabId, message) {
+    return new Promise((resolve, reject) => {
       try {
-        browserAPI.action.openPopup();
-      } catch (e) {
-        logError('action.openPopup', e);
-      }
-      setTimeout(() => {
-        browserAPI.action.setPopup({ popup: '' });
-      }, 100);
-    } else {
-      generateMarkdownLinkFromTab(tab);
-    }
-  });
-});
-
-browserAPI.commands.onCommand.addListener((command) => {
-  if (command === "copy-as-markdown") {
-    browserAPI.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (browserAPI.runtime.lastError) {
-        logError('tabs.query(active currentWindow)', browserAPI.runtime.lastError);
-        return;
-      }
-      if (tabs[0]) {
-        generateMarkdownLinkFromTab(tabs[0]);
+        browserAPI.tabs.sendMessage(tabId, message, (response) => {
+          if (browserAPI.runtime.lastError) {
+            reject(new Error(browserAPI.runtime.lastError.message));
+          } else {
+            resolve(response);
+          }
+        });
+      } catch (error) {
+        reject(error);
       }
     });
   }
-});
 
-browserAPI.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "copyAsMarkdownLink") {
-    if (info.linkUrl) {
-      fetchTitleAndCreateLink(info.linkUrl);
-    } else {
-      generateMarkdownLinkFromTab(tab);
+  showNotification(tabId, message) {
+    this.sendMessage(tabId, { action: "showNotification", message }).catch(
+      () => {},
+    );
+  }
+
+  async copyToClipboard(text) {
+    try {
+      const tabs = await this.queryActiveTab();
+      if (!tabs[0]) return;
+
+      await this.sendMessage(tabs[0].id, { 
+        action: "copyToClipboard", 
+        text: text 
+      });
+    } catch (error) {
+      this.logError("copyToClipboard", error);
     }
   }
-});
 
-function generateMarkdownLinkFromTab(tab) {
-  browserAPI.tabs.sendMessage(tab.id, { action: "getMetadata" }, (response) => {
-    if (browserAPI.runtime.lastError) {
-      const fallbackTitle = tab.title || tab.url || 'Link';
-      const fallbackUrl = tab.url || '';
-      const markdownLink = `[${fallbackTitle}](${fallbackUrl})`;
-      copyToClipboard(markdownLink);
-      return;
-    }
-
-    if (response && response.markdownLink) {
-      copyToClipboard(response.markdownLink);
-      browserAPI.tabs.sendMessage(tab.id, {
-        action: "showNotification",
-        message: "Markdown link copied to clipboard!"
-      }, () => {
-        if (browserAPI.runtime.lastError) {
-          logError('tabs.sendMessage(showNotification)', browserAPI.runtime.lastError);
-        }
-      });
-    }
-  });
+  queryActiveTab() {
+    return new Promise((resolve) => {
+      browserAPI.tabs.query({ active: true, currentWindow: true }, resolve);
+    });
+  }
 }
 
-function fetchTitleAndCreateLink(url) {
-  const markdownLink = `[${url}](${url})`;
-  copyToClipboard(markdownLink);
-}
-
-function copyToClipboard(text) {
-  browserAPI.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const activeTab = tabs && tabs[0];
-    if (!activeTab) {
-      return;
-    }
-
-    const runClipboard = () => {
-      try {
-        if (browserAPI.scripting && browserAPI.scripting.executeScript) {
-          browserAPI.scripting.executeScript({
-            target: { tabId: activeTab.id },
-            func: (t) => {
-              if (navigator.clipboard && navigator.clipboard.writeText) {
-                return navigator.clipboard.writeText(t);
-              }
-              const textarea = document.createElement('textarea');
-              textarea.value = t;
-              textarea.style.position = 'fixed';
-              textarea.style.top = '-9999px';
-              document.body.appendChild(textarea);
-              textarea.focus();
-              textarea.select();
-              document.execCommand('copy');
-              document.body.removeChild(textarea);
-              return Promise.resolve();
-            },
-            args: [text]
-          }, () => {
-            if (browserAPI.runtime.lastError) {
-              logError('Clipboard executeScript', browserAPI.runtime.lastError);
-            } else {
-              browserAPI.tabs.sendMessage(activeTab.id, { action: "showNotification", message: "Markdown link copied to clipboard!" }, () => {
-                if (browserAPI.runtime.lastError) {
-                  logError('tabs.sendMessage(showNotification)', browserAPI.runtime.lastError);
-                }
-              });
-            }
-          });
-        } else {
-          browserAPI.tabs.sendMessage(activeTab.id, { action: "copyToClipboard", text }, () => {
-            if (browserAPI.runtime.lastError) {
-              logError('Clipboard message to content script', browserAPI.runtime.lastError);
-            }
-          });
-        }
-      } catch (e) {
-        logError('Clipboard exception', e);
-      }
-    };
-
-    runClipboard();
-  });
-}
+new MarkLinkBackground();
