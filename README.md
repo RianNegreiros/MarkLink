@@ -8,7 +8,6 @@ A browser extension for Chrome and Firefox that generates formatted Markdown lin
 - Automatic metadata extraction (page title, author/creator)
 - YouTube playlist support
 - YouTube links strip resume-time params (`t`, `time_continue`, `start`, `end`, `#t=`)
-- Keyboard shortcut (Alt+M)
 - **Works on both Chrome and Firefox**
 
 ## Installation
@@ -38,26 +37,14 @@ You can install MarkLink in Firefox in two ways:
 1. Visit a webpage
 2. Use any of these methods:
    - Click the MarkLink icon
-   - Press Alt+M
    - Right-click and select "Copy as Markdown Link"
 3. Paste the generated link in Obsidian (or any Markdown editor)
-
-## Settings
-
-Access the options page to customize:
-
-- Click behavior (instant copy/popup UI)
-- YouTube link format (regular/thumbnail preview)
-- Link format preferences
-
-You can also access the Privacy Policy and GitHub repository links from the options page footer.
 
 ## Privacy
 
 MarkLink is designed with privacy in mind:
 
 - No data collection or tracking
-- All settings stored locally
 - No third-party services or analytics
 - Minimal permissions required
 

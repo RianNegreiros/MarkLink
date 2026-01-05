@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.5.0] - 2026-01-05
+
+### Changed
+
+- **Major simplification**: Removed popup UI, keyboard shortcuts, and options page
+- **Streamlined permissions**: Reduced to minimal required permissions (`activeTab`, `clipboardWrite`, `contextMenus`)
+- **Simplified architecture**: Extension now works with just icon click and right-click menu
+- **Fixed clipboard issues**: Replaced deprecated `document.execCommand` with modern Clipboard API
+
+### Removed
+
+- Popup interface and related functionality
+- Keyboard shortcut (Alt+M)
+- Options page and YouTube format settings
+- Storage and scripting permissions
+- Click behavior configuration
+
 ## [1.4.5] - 2025-09-17
 
 ### Changed
